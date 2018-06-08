@@ -25,36 +25,37 @@ links.each do |section|
   limit = page.search(".plp-pagination-result > p").text
   limit = limit.split(/[^\d]/).map{|e| e.to_i}.max
   i = 0
-
-  until i >= limit
-    base_url = url
-    if i % 80 == 0  && limit > i
-      url = "#{url}&No=#{i}"
-      html_file = open(url, 'Cookie' => 'selectedCity=ML').read
-      page = Nokogiri::HTML(html_file)
-      page.search(".product.grocery").map do |element|
-        puts "thiiiiiiiiiiiiiiiiiiiiiiiiiiiiiis is i: #{i}"
-        puts "#{url}"
-        Product.create(
-                      {
-                        num: i += 1,
-                        position: element.attribute('data-position').value,
-                        category: category,
-                        skuid: element.attribute('data-skuid').value,
-                        prd_id: element.attribute('data-prdid').value,
-                        name: element.search(".name").text,
-                        brand: element.search(".brand").text,
-                        price: element.search(".before > .money").text.blank? ? element.search(".money").text.strip.to_i : element.search(".before > .money").text.strip.to_i,
-                        link_com_1:section[:link_components][0],
-                        link_com_2:section[:link_components][1],
-                        link_com_3:section[:link_components][2],
-                        link_com_4:section[:link_components][3],
-                        link_com_5:section[:link_components][4],
-                        link_com_6:section[:link_components][5]
-                      }
-                    )
+  unless limit.blank?
+    until i >= limit
+      base_url = url
+      if i % 80 == 0  && limit > i
+        url = "#{url}&No=#{i}"
+        html_file = open(url, 'Cookie' => 'selectedCity=ML').read
+        page = Nokogiri::HTML(html_file)
+        page.search(".product").map do |element|
+          puts "thiiiiiiiiiiiiiiiiiiiiiiiiiiiiiis is i: #{i}"
+          puts "#{url}"
+          Product.create(
+                        {
+                          num: i += 1,
+                          position: element.attribute('data-position').value,
+                          category: category,
+                          skuid: element.attribute('data-skuid').value,
+                          prd_id: element.attribute('data-prdid').value,
+                          name: element.search(".name").text,
+                          brand: element.search(".brand").text,
+                          price: element.search(".before > .money").text.blank? ? element.search(".money").text.strip.to_i : element.search(".before > .money").text.strip.to_i,
+                          link_com_1:section[:link_components][0],
+                          link_com_2:section[:link_components][1],
+                          link_com_3:section[:link_components][2],
+                          link_com_4:section[:link_components][3],
+                          link_com_5:section[:link_components][4],
+                          link_com_6:section[:link_components][5]
+                        }
+                      )
+        end
+        url = base_url
       end
-      url = base_url
     end
   end
 end
