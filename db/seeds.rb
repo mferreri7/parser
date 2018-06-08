@@ -1,4 +1,3 @@
-# Test
 require 'open-uri'
 require 'nokogiri'
 
